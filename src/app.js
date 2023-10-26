@@ -1,10 +1,12 @@
 import express from 'express';
 import productsRouter from './routes/products.router.js';
+import productsRouter2 from './routes/products2.router.js'
 import cartsRouter from './routes/carts.router.js';
 import viewsRouter from './routes/views.router.js';
 import { __dirname } from './utils.js';
 import { engine } from 'express-handlebars';
 import { Server } from 'socket.io';
+import "./db/configDB.js";
 
 const app = express();
 app.use(express.json());
@@ -19,6 +21,7 @@ app.set('view engine','handlebars');
 //routes
 app.use('/api/views',viewsRouter);
 app.use('/api/products',productsRouter);
+app.use('/api/products2',productsRouter2);
 app.use('/api/carts',cartsRouter);
 
 const httpServer = app.listen(8080, () => {
