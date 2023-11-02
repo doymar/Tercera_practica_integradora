@@ -2,6 +2,7 @@ import express from 'express';
 import productsRouter from './routes/products.router.js';
 import productsRouter2 from './routes/products2.router.js'
 import cartsRouter from './routes/carts.router.js';
+import cartsRouter2 from './routes/carts2.router.js'
 import viewsRouter from './routes/views.router.js';
 import { __dirname } from './utils.js';
 import { engine } from 'express-handlebars';
@@ -23,21 +24,22 @@ app.use('/api/views',viewsRouter);
 app.use('/api/products',productsRouter);
 app.use('/api/products2',productsRouter2);
 app.use('/api/carts',cartsRouter);
+app.use('/api/carts2',cartsRouter2)
 
-const httpServer = app.listen(8080, () => {
-    console.log('Escuchando el puerto 8080');
+const PORT = 8080;
+
+const httpServer = app.listen(PORT, () => {
+    console.log(`Escuchando el puerto ${PORT}`);
 });
 
 const socketServer = new Server(httpServer);
 
 socketServer.on('connection',socket=>{
-    //console.log(`Cliente conectado: ${socket.id}`);
-    socket.on('disconnect',()=>{
-      //  console.log(`Cliente desconectado: ${socket.id}`);
-    })
-
-    //socket.emit("welcome","Welcome to websocket")
-    socket.on('newPrice',(value)=>{
-        console.log("newPrice", value);
+    console.log(`Cliente conectado: ${socket.id}`);
+    //socket.on('disconnect',()=>{
+    //    console.log(`Cliente desconectado: ${socket.id}`);
+    //})
+    socket.on('newUser',(user)=>{
+        socket.broadcast.emit("userConnected", user)
     })
 });
