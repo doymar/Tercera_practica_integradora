@@ -33,13 +33,16 @@ const httpServer = app.listen(PORT, () => {
 });
 
 const socketServer = new Server(httpServer);
-
+const messages = [];
 socketServer.on('connection',socket=>{
     console.log(`Cliente conectado: ${socket.id}`);
-    //socket.on('disconnect',()=>{
-    //    console.log(`Cliente desconectado: ${socket.id}`);
-    //})
     socket.on('newUser',(user)=>{
-        socket.broadcast.emit("userConnected", user)
+        socket.broadcast.emit("userConnected", user);
+        socket.emit("connected");
+    })
+    socket.on('message', infoMessage =>{
+        messages.push(infoMessage);
+        console.log(messages);
+        socketServer.emit('chat',messages);
     })
 });

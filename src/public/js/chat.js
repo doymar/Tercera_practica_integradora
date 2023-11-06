@@ -1,5 +1,8 @@
 const socketClient = io();
 const h4Name = document.getElementById("name");
+const form = document.getElementById("chatForm");
+const inputMessage = document.getElementById("message");
+const divChat = document.getElementById("chat");
 let user;
 Swal.fire({
     title: "Welcome!",
@@ -25,4 +28,32 @@ Swal.fire({
       },
       duration: 5000,
     }).showToast();
+  });
+
+  socketClient.on("connected", (user) => {
+    Toastify({
+      text: "You are connected",
+      style: {
+        background: "linear-gradient(to right, #00b09b, #96c93d)",
+      },
+      duration: 5000,
+    }).showToast();
+  });
+
+  form.onsubmit = (e)=>{
+    e.preventDefault()
+    const infoMessage = {
+      name: user,
+      message: inputMessage.value,
+    };
+    inputMessage.innerText = "";
+    socketClient.emit("message", infoMessage)
+  };
+
+  socketClient.on("chat",(messages)=>{
+    const chat = messages.map((m)=>{
+      return `<p>${m.name}: ${m.message}</p>`
+    })
+    .join(" ")
+    divChat.innerHTML = chat;
   });
