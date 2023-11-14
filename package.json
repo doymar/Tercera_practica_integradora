@@ -4,7 +4,7 @@
   "type": "module",
   "main": "src/ProductManager.js",
   "scripts": {
-    "start": "node src/app.js"
+    "start": "nodemon src/app.js"
   },
   "keywords": [],
   "author": "",

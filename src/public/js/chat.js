@@ -43,7 +43,7 @@ Swal.fire({
   form.onsubmit = (e)=>{
     e.preventDefault()
     const infoMessage = {
-      name: user,
+      user: user,
       message: inputMessage.value,
     };
     inputMessage.innerText = "";
@@ -52,7 +52,7 @@ Swal.fire({
 
   socketClient.on("chat",(messages)=>{
     const chat = messages.map((m)=>{
-      return `<p>${m.name}: ${m.message}</p>`
+      return `<p>${m.user}: ${m.message}</p>`
     })
     .join(" ")
     divChat.innerHTML = chat;
