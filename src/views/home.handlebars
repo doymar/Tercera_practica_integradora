@@ -1,0 +1,16 @@
+<h2>Bienvenido!!</h2>
+<h4>Productos disponibles:</h4>
+
+{{#if products}}
+
+{{#each products}}
+<div>
+    <h3>{{title}}</h3>
+    <p>{{price}}</p>
+    <p>{{stock}}</p>
+</div>
+{{/each}}
+
+{{else}}
+<p>No products</p>
+{{/if}}

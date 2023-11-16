@@ -1,8 +1,6 @@
 import express from 'express';
 import productsRouter from './routes/products.router.js';
-import productsRouter2 from './routes/products2.router.js'
 import cartsRouter from './routes/carts.router.js';
-import cartsRouter2 from './routes/carts2.router.js'
 import viewsRouter from './routes/views.router.js';
 import usersRouter from './routes/users.router.js';
 import { MessageManager } from './managers/MessagesManager.js';
@@ -22,12 +20,10 @@ app.set('views',__dirname + '/views');
 app.set('view engine','handlebars');
 
 //routes
-app.use('/api/views',viewsRouter);
+app.use('/',viewsRouter);
 app.use('/api/users',usersRouter);
 app.use('/api/products',productsRouter);
-app.use('/api/products2',productsRouter2);
 app.use('/api/carts',cartsRouter);
-app.use('/api/carts2',cartsRouter2)
 
 const PORT = 8080;
 

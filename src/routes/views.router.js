@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ProductManager2 } from "../managers/ProductsManager2.js";
+import { ProductManager } from "../managers/ProductsManager.js";
 
 const router = Router();
 
@@ -14,16 +14,14 @@ router.get("/realtimeproducts",(req,res)=>{
 router.get('/product/:idProduct',async(req,res)=>{
     const {idProduct} = req.params
     console.log(idProduct); 
-    const response = await ProductManager2.findById(idProduct);
+    const response = await ProductManager.findById(idProduct);
     const {title, description, price} = response
     res.render('product',{product: {title,description,price}});
 })
 
-router.get('/products',async(req,res)=>{
-    const response = await ProductManager2.findAll({});
-    const {title, description, price} = response
-    res.render("products",{products:{title,description,price}})
-   
+router.get('/home', async (req,res) => {
+    const products = await ProductManager.findAll();
+    res.render("home",{products})
 })
 
 router.get('/signup',(req,res)=>{
@@ -33,7 +31,7 @@ router.get('/signup',(req,res)=>{
 router.get('/profile/:idProduct',async(req,res)=>{
     const {idProduct} = req.params
     console.log(idProduct); 
-    const response = await ProductManager2.findById(idProduct);
+    const response = await ProductManager.findById(idProduct);
     const {title, description, price} = response
     res.render('profile',{product: {title,description,price}});
 })
