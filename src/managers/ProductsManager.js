@@ -1,19 +1,29 @@
 import { productsModel } from "../db/models/products.model.js";
 
 class ProductsManager {
-    // async findAll() {
-    //     const response = await productsModel.find().lean();
-    //     return response;
-    // }
     //Paginate
     async findAll(obj) {
-      const {limit=10, page=1, ...query} = obj;
-      const response = await productsModel.paginate(query,{limit, page})
-      // .aggregate([
-      //   {$sort: {price: sort}}
-      // ]);
+      const {limit=10, page=1,order="def", ...query} = obj;
+      
+      let sort
+      if (order== "asc"){
+        sort = 'price'
+      }else if (order== "desc"){
+        sort = '-price'
+      }else if(order == "def"){
+        sort = {}
+      }
+
+      const options =  {
+        page: page,
+        limit: limit,
+        sort
+      }
+
+      const response = await productsModel.paginate(query,options)
+      
       const info = {
-        status: response.status,
+        status: response.docs ? "success" : "error",
         payload: response.docs,
         totalPages: response.totalPages,
         prevPage: response.prevPage,
