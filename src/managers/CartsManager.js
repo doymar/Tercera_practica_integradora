@@ -10,7 +10,7 @@ class CartsManager {
   async findCartById(idCart) {
     const response = await cartsModel
       .findById(idCart)
-      .populate("products.product", ["title", "price"]);
+      .populate("products.product"); 
     return response;
   }
 
@@ -18,9 +18,7 @@ class CartsManager {
     const cart = await cartsModel.findById(idCart);
 
     const productIndex = cart.products.findIndex((p) =>
-      p.product.equals(idProduct)
-    );
-
+      p.product.equals(idProduct));
     if (productIndex === -1) {
       cart.products.push({ product: idProduct, quantity: 1 });
     } else {
@@ -30,20 +28,40 @@ class CartsManager {
   }
 
   async deleteProductToCart(idCart, idProduct) {
-    await cartsModel.updateOne({_id:idCart},{ $pull: {product: idProduct}})
-    // const cart = await cartsModel.findById(idCart);
+    const cart = await cartsModel.findById(idCart);
+    const productIndex = cart.products.findIndex((p) =>
+      p.product.equals(idProduct));
+    const productDeleted = cart.products[productIndex]
+    if (productIndex !== -1) {
+      cart.products.splice(productIndex, 1);
+    } 
+    await cart.save();
+    return productDeleted
+  }
 
-    // const productIndex = cart.products.findIndex((p) =>
-    //   p.product.equals(idProduct)
-    // );    
+  async updateProductsArray (idCart,prod) {
+    const cart = await cartsModel.findById(idCart);
+    cart.products = prod;
+    await cart.save();
+    return cart;
+  }
 
-    // if (productIndex === -1) {
-    //   const error = "The product does not exist";
-    //   return error
-    // } else {
-    //   cart.products[productIndex].pull({_id: idProduct});
-    // }
-    //return cart.save();
+  async updateProductQuantity(idCart, idProduct, quant) {
+    const cart = await cartsModel.findById(idCart);
+    const productIndex = cart.products.findIndex((p) =>
+      p.product.equals(idProduct));
+    if (productIndex !== -1) {
+      cart.products[productIndex].quantity = quant;
+    } 
+    await cart.save();
+    return cart;
+  }
+
+  async deleteAllProducts(idCart) {
+    const cart = await cartsModel.findById(idCart);
+    cart.products = []
+    await cart.save();
+    return cart;
   }
 }
 

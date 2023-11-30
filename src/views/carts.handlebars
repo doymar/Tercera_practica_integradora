@@ -1,0 +1,18 @@
+<h2>Productos en tu carrito:</h2>
+
+{{#if products}}
+
+{{#each products}}
+<div>
+    <h3>{{product.title}}</h3>
+    <p>Description: {{product.description}}</p>
+    <p>Price: {{product.price}}</p>
+    <p>Stock: {{product.stock}}</p>
+    <p>Quantity: {{quantity}}</p>
+    <p>Category: {{product.category}}</p>
+</div>
+{{/each}}
+
+{{else}}
+<p>No products</p>
+{{/if}}
