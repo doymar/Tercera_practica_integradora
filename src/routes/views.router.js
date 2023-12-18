@@ -8,6 +8,24 @@ router.get("/",(req,res)=>{
     res.render("chat");
 });
 
+router.get("/login",(req,res) => {
+    if (req.user) {
+        return res.redirect("/home")
+    }
+    res.render('login')
+})
+
+router.get("/signup2",(req,res) => {
+    if (req.user) {
+        return res.redirect("/home")
+    }
+    res.render('signup2')
+})
+
+router.get("/restaurar",(req,res) => {
+    res.render('restaurar')
+})
+
 router.get("/realtimeproducts",(req,res)=>{
     res.render("realTimeProducts");
 });
@@ -20,11 +38,15 @@ router.get('/product/:idProduct',async(req,res)=>{
 })
 
 router.get('/home', async (req,res) => {
+    if (!req.user) {
+        return res.redirect("/login")
+    }
     const response = await ProductManager.findAll(req.query);
     const {info} = response
     const {payload} = info 
     const productsData = payload.map(doc => doc.toObject());
-    res.render("home",{products: productsData})
+    const {first_name, email, role} = req.user;
+    res.render("home",{products: productsData, user: {first_name, email, role}})
 })
 
 router.get('/signup',(req,res)=>{

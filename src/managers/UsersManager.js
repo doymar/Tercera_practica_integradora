@@ -2,17 +2,17 @@ import { usersModel } from "../db/models/users.model.js";
 
 class UsersManager {
     async findAll() {
-        const response = await usersModel.find();
+        const response = await usersModel.find().populate('cart');
         return response;
     }
 
     async findById(id) {
-        const response = await usersModel.findById(id);
+        const response = await usersModel.findById(id).populate('cart');
         return response;
     }
 
     async findByEmail(email) {
-        const response = await usersModel.findOne({email});
+        const response = await usersModel.findOne({email}).populate('cart');
         return response;
     }
 

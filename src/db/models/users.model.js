@@ -16,9 +16,30 @@ const usersSchema = new mongoose.Schema({
         //Forma de indexar un campo que no sea unique
         //index: true;
     },
-    gender: {
+    age: {
+        type: Number,
+    },
+    password: {
         type: String,
         required: true,
+    },
+    cart: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Carts",
+        default: null,
+      },
+    isGithub: {
+        type: Boolean,
+        default: false,
+    },
+    isGoogle: {
+        type: Boolean,
+        default: false,
+    },
+    role: {
+        type: String,
+        enum: ['admin','premium','user'],
+        default: 'user',
     },
 });
 

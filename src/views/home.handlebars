@@ -1,5 +1,6 @@
-<h2>Bienvenido!!</h2>
-<h4>Productos disponibles:</h4>
+<h2>Bienvenido {{user.first_name}}!!</h2>
+<h4>Tu email es: {{user.email}}</h4>
+<h4>Rol: {{user.role}}</h4>
 
 {{#if products}}
 
@@ -14,3 +15,5 @@
 {{else}}
 <p>No products</p>
 {{/if}}
+
+<button><a href="/api/sessions/signout">SIGNOUT</a></button>
