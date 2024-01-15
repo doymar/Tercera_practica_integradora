@@ -1,5 +1,5 @@
 import { existsSync, promises } from 'fs'
-import { ProductsManager } from './ProductManager.js'
+import { ProductsManager } from './productsfs.dao.js'
 import { Console } from 'console';
 
 class CartManager {

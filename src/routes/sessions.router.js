@@ -1,53 +1,8 @@
 import { Router } from "express";
 import passport from "passport";
-import { UserManager } from '../managers/UsersManager.js'
+import { UserManager } from '../daos/users.dao.js'
 import { hashData, compareData, generateToken } from "../utils.js";
 const router = Router();
-
-// router.post("/signup2", async (req,res) =>{
-//     const {first_name,last_name,email,password} = req.body
-//     if(!first_name || !last_name || !email || !password){
-//         res.status(400).json({message: "All fields are required"})
-//     }
-//     try {
-//         const hashedPassword = await hashData(password);
-//         const createdUser = await UserManager.createOne({...req.body, password: hashedPassword});
-//         res.status(200).json({message: "User created", user: createdUser})
-//     } catch (error) {
-//         res.status(500).json({error})
-//     }
-// });
-
-// router.post("/login", async(req,res) =>{
-//     const {email,password} = req.body
-//     if(!email || !password){
-//         res.status(400).json({message: "All fields are required"})
-//     }
-//     try {
-//         const user = await UserManager.findByEmail(email);
-//         if(!user) {
-//             return res.redirect("/signup2")
-//         }
-//         const isPasswordValid = await compareData(password,user.password);
-//         if(!isPasswordValid) {
-//             return res.status(401).json({message: "Password is not valid"})
-//         }
-//         //sessions
-//         // const sessionInfo = { email, first_name: user.first_name, rol: "user" };
-//         // req.session.user = sessionInfo;
-//         //res.redirect("/home")
-
-//         //jwt
-//         const {first_name, last_name, role} = user;
-//         const token = generateToken({first_name, last_name, email, role});
-//         //res.json({message: 'Token', token})
-//         res.status(200).cookie('token', token, {httpOnly: true})
-//         //.json({message: 'Bienvenido', token})
-//         .redirect('/home');
-//     } catch (error) {
-//         res.status(500).json({error})
-//     }
-// })
 
 router.get('/current', passport.authenticate('jwt',{session: false}), async (req,res) =>{
   res.status(200).json({message: 'User loged', user: req.user})
@@ -60,19 +15,12 @@ router.post('/signup2',passport.authenticate('signup',{
     failureRedirect: '/signup2'
 }))
 
-router.post('/login',passport.authenticate('login',
-// {
-//     successRedirect: '/home',
-//     failureRedirect: '/login'
-// }
-),
-(req,res) => {
+router.post('/login',passport.authenticate('login'),(req,res) => {
   const {first_name, last_name, email, role} = req.user;
   const token = generateToken({first_name, last_name, email, role});
   res.cookie("token", token, { maxAge: 60000, httpOnly: true })
   .redirect('/home');
-}
-)
+})
 
 // SIGNUP - LOGIN - PASSPORT GITHUB
 

@@ -1,10 +1,11 @@
 import passport from "passport";
-import { UserManager } from "./managers/UsersManager.js";
+import { UserManager } from "./daos/users.dao.js";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GithubStrategy } from "passport-github2";
 import { Strategy as GoogleStrategy} from "passport-google-oauth20";
 import { ExtractJwt, Strategy as JWTStrategy } from "passport-jwt";
 import { hashData, compareData } from "./utils.js";
+import config from './config.js'
 
 //local
 passport.use('signup', new LocalStrategy({ passReqToCallback: true, usernameField: 'email'},
@@ -44,8 +45,8 @@ passport.use('login', new LocalStrategy({usernameField: 'email'}, async(email, p
 //github
 passport.use('github', new GithubStrategy(
     {
-        clientID: 'Iv1.7115b023640c0835',
-        clientSecret: '868c48924197b3d52554fe25f5f64b468df4b917',
+        clientID: config.github_clientid,
+        clientSecret: config.github_clientsecret,
         callbackURL: "http://localhost:8080/api/sessions/callback"
     },
     async (accessToken, refreshToken, profile, done) => {
@@ -79,8 +80,8 @@ passport.use('github', new GithubStrategy(
 //google
 passport.use('google', new GoogleStrategy(
     {
-        clientID: '884964685837-rao0ap2rage38fi1jbmg6sck00uurco7.apps.googleusercontent.com',
-        clientSecret: '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',
+        clientID: config.google_clientid,
+        clientSecret: config.google_clientsecret,
         callbackURL: "http://localhost:8080/api/sessions/auth/google/callback"
     },
     async function(accessToken, refreshToken, profile, done){
@@ -118,7 +119,7 @@ const fromCookies = (req) => {
 passport.use('jwt', new JWTStrategy({
     //jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     jwtFromRequest: ExtractJwt.fromExtractors([fromCookies]),
-    secretOrKey:'secretJWT',
+    secretOrKey:config.secret_jwt,
 }, (jwt_payload, done) => {
     done(null, jwt_payload)
 }))

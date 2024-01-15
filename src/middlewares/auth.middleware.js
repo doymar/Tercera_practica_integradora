@@ -8,6 +8,7 @@ export const authMiddleware = (req,res,next)=>{
 
 export const authMiddleware2 = (role)=> {
   return (req,res,next)=> {
+    console.log(req.user);
     if(req.user.role !== role){
       return res.status(403).json('Not authoraized')
     }
