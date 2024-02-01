@@ -1,22 +1,19 @@
 import passport from "passport";
-import { UserManager } from "./daos/users.dao.js";
+import { UserManager } from "./DAL/daos/mongo/users.mongo.js";
+import { usersService } from "./services/users.service.js";
+import { CartManager } from "./DAL/daos/mongo/carts.mongo.js";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GithubStrategy } from "passport-github2";
 import { Strategy as GoogleStrategy} from "passport-google-oauth20";
 import { ExtractJwt, Strategy as JWTStrategy } from "passport-jwt";
-import { hashData, compareData } from "./utils.js";
-import config from './config.js'
+import { hashData, compareData } from "./utils/utils.js";
+import config from './config/config.js'
 
 //local
 passport.use('signup', new LocalStrategy({ passReqToCallback: true, usernameField: 'email'},
     async(req, email, password, done)=> {
-    const {first_name,last_name} = req.body
-    if(!first_name || !last_name || !email || !password ){
-        return done(null, false)
-    }
     try {
-        const hashedPassword = await hashData(password);
-        const createdUser = await UserManager.createOne({...req.body, password: hashedPassword});
+        const createdUser = await usersService.createOne(req.body);
         done(null, createdUser)
     } catch (error) {
         done(error)
@@ -50,7 +47,6 @@ passport.use('github', new GithubStrategy(
         callbackURL: "http://localhost:8080/api/sessions/callback"
     },
     async (accessToken, refreshToken, profile, done) => {
-        console.log(profile);
         try {
             const userDB = await UserManager.findByEmail(profile._json.email);
             //login
@@ -69,7 +65,9 @@ passport.use('github', new GithubStrategy(
                 password: ' ',
                 isGithub: true
             };
-            const createdUser = await UserManager.createOne(infoUser);
+            const newCart = await CartManager.createCart();
+            const newObj = {...infoUser, cart: newCart._id}
+            const createdUser = await UserManager.createOne(newObj);
             done(null, createdUser);
         } catch (error) {
             done(error)
@@ -103,7 +101,9 @@ passport.use('google', new GoogleStrategy(
                 password: ' ',
                 isGoogle: true
             };
-            const createdUser = await UserManager.createOne(infoUser);
+            const newCart = await CartManager.createCart();
+            const newObj = {...infoUser, cart: newCart._id}
+            const createdUser = await UserManager.createOne(newObj);
             done(null, createdUser);
         } catch (error) {
             done(error)

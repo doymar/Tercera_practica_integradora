@@ -6,16 +6,19 @@ import viewsRouter from './routes/views.router.js';
 import usersRouter from './routes/users.router.js';
 import cookieRouter from './routes/cookie.router.js';
 import sessionsRouter from './routes/sessions.router.js';
+import messagesRouter from './routes/messages.router.js'
 import session from 'express-session';
-import { MessageManager } from './daos/messages.dao.js'
-import { __dirname } from './utils.js';
+import { MessageManager } from './DAL/daos/mongo/messages.mongo.js'
+import { errorMiddleware } from './middlewares/errors.middleware.js';
+import { __dirname } from './utils/utils.js';
 import { engine } from 'express-handlebars';
 import { Server } from 'socket.io';
+import { logger } from './utils/logger.js';
 import MongoStore from 'connect-mongo';
-import './db/configDB.js';
+import './config/configDB.js';
 import './passport.js';
 import passport from 'passport';
-import config from './config.js';
+import config from './config/config.js';
 
 const app = express();
 app.use(express.json());
@@ -52,24 +55,27 @@ app.use('/api/products',productsRouter);
 app.use('/api/carts',cartsRouter);
 app.use('/api/cookie', cookieRouter);
 app.use('/api/sessions', sessionsRouter);
+app.use('/api/messages', messagesRouter);
 
-const PORT = 8080;
+app.use(errorMiddleware);
+
+const PORT = config.port;
 
 const httpServer = app.listen(PORT, () => {
-    console.log(`Escuchando el puerto ${PORT}`);
+    logger.info(`Escuchando el puerto ${PORT}`);
 });
 
 const socketServer = new Server(httpServer);
 const messages = [];
 socketServer.on('connection',socket=>{
-    console.log(`Cliente conectado: ${socket.id}`);
+    logger.info(`Cliente conectado: ${socket.id}`);
     socket.on('newUser',(user)=>{
         socket.broadcast.emit("userConnected", user);
         socket.emit("connected");
     })
     socket.on('message', async(infoMessage)  =>{
         messages.push(infoMessage);
-        console.log(infoMessage);
+        logger.info(infoMessage);
         await MessageManager.createOne(infoMessage);
         socketServer.emit('chat',messages);
     })

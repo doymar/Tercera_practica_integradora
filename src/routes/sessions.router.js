@@ -1,7 +1,9 @@
 import { Router } from "express";
 import passport from "passport";
-import { UserManager } from '../daos/users.dao.js'
-import { hashData, compareData, generateToken } from "../utils.js";
+import { usersMiddleware } from "../middlewares/items.middleware.js";
+import { UserManager } from '../DAL/daos/mongo/users.mongo.js'
+import { hashData, compareData, generateToken } from "../utils/utils.js";
+import { logger } from "../utils/logger.js";
 const router = Router();
 
 router.get('/current', passport.authenticate('jwt',{session: false}), async (req,res) =>{
@@ -10,7 +12,7 @@ router.get('/current', passport.authenticate('jwt',{session: false}), async (req
 
 // SIGNUP - LOGIN - PASSPORT LOCAL
 
-router.post('/signup2',passport.authenticate('signup',{
+router.post('/signup2', usersMiddleware,passport.authenticate('signup',{
     successRedirect: '/login',
     failureRedirect: '/signup2'
 }))
@@ -49,12 +51,45 @@ router.get("/signout", async(req,res) => {
     })
 })
 
-router.post("/restaurar", async (req, res) => {
-    const { email, password } = req.body;
+router.post('/password_reset', async(req,res) =>{
+  const { email } = req.body;
+  console.log(email);
+  try {
+    const user = await UserManager.findByEmail(email);
+    if (!user) {
+      return res.status(400).json({ message: "User not found with the email provided" });
+    }
+    const mailOptions = {
+      from: 'DoymarEcommers',
+      to: email,
+      subject: 'User Password Reset',
+      //text: 'Primera prueba mail',
+      html: `<b>Please click on the link below</b>
+      <a href="http://localhost:8080/restart/${email}">Restore password</a>`,
+    }
+    await transporter.sendMail(mailOptions);
+
+    const token = generateToken({email})   
+    res.cookie('token', token, { maxAge: 3600000, httpOnly: true })
+    logger.info("token", token)
+    
+    res.status(200).json({ message: "Recovery email sent" });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+})
+
+router.post("/restaurar/:email", async (req, res) => {
+    const { password } = req.body;
+    const { email } = req.params;
     try {
       const user = await UserManager.findByEmail(email);
-      if (!user) {
-        return res.redirect("/signup2");
+      if (!req.cookies.token){
+        return res.redirect("/password_rest")
+      }
+      const isPasswordValid = await compareData(password,user.password);
+      if (isPasswordValid) {
+        return res.status(400).json({ message: "The password cannot be the same as the previous ones. Please enter a different password" });
       }
       const hashedPassword = await hashData(password);
       user.password = hashedPassword;
