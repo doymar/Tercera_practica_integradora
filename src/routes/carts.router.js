@@ -9,7 +9,7 @@ router.post("/", createCart);
 router.get("/:idCart", findCartById);
 
 router.post("/:idCart/product/:idProduct", 
-authMiddleware('user'), 
+authMiddleware(['user','premium']), 
 addProductToCart);
 
 router.delete("/:cid/products/:pid", deleteProductToCart)

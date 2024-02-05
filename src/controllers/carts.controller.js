@@ -34,7 +34,8 @@ export const addProductToCart = async (req, res, next) => {
       if (!mongoose.Types.ObjectId.isValid(idCart) || !mongoose.Types.ObjectId.isValid(idProduct) ) {
         return CustomError.generateError(ErrorsMessages.OID_INVALID,404, ErrorsNames.OID_INVALID);
       }
-      const cart = await cartsService.addProduct(idCart, idProduct);
+      const owner = req.user.email
+      const cart = await cartsService.addProduct(idCart, idProduct, owner);
       if (!cart) {
         return CustomError.generateError(ErrorsMessages.CART_OR_PRODUCT_NOT_FOUND,404,ErrorsNames.CART_OR_PRODUCT_NOT_FOUND);
       }

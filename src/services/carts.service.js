@@ -1,4 +1,5 @@
 import { CartManager } from "../DAL/daos/mongo/carts.mongo.js";
+import { ProductManager } from "../DAL/daos/mongo/products.mongo.js";
 import { TicketManager } from '../DAL/daos/mongo/tickets.mongo.js'
 import { UserManager } from "../DAL/daos/mongo/users.mongo.js";
 import { v4 as uuidv4 } from 'uuid'
@@ -15,8 +16,12 @@ class CarsService {
     return cart;
     }
 
-    async addProduct(cid,pid) {
-    const cart = await CartManager.addProductToCart(cid,pid);
+    async addProduct(cid,pid,owner) {
+      const product = await ProductManager.findById(pid);
+      if (product.owner == owner){
+        return {message: 'You cannot add products you own'}
+      }
+      const cart = await CartManager.addProductToCart(cid,pid);
     return cart;
     }
 

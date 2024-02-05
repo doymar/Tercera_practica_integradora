@@ -36,6 +36,17 @@ class UsersService {
         const user = await UserManager.deleteOne(id);
         return user;
     }
+
+    async updateRole(id) {
+        const user = await UserManager.findById(id)
+        if(user.role === 'user'){
+            user.role = 'premium'
+        } else {
+            user.role = 'user'
+        }
+        await user.save();
+        return user.role;
+    }
 }
 
 export const usersService = new UsersService();

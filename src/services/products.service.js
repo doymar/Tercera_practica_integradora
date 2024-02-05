@@ -16,7 +16,11 @@ class ProductsService {
         return product;
     }
 
-    async deleteOne(id) {
+    async deleteOne(id,user) {
+        const prod = await ProductManager.findById(id)
+        if (!prod.owner == user.email || !user.role == 'admin'){
+            return {message: 'You are not the owner of this product'}
+        }
         const product = await ProductManager.deleteOne(id);
         return product;
     }

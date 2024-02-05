@@ -30,7 +30,7 @@ export const findProductById = async(req,res,next)=>{
 
 export const createProduct = async (req, res, next) => {
     try {
-      const response = await productsService.createOne(req.body);
+      const response = await productsService.createOne({...req.body, owner: req.user.email});
       if(!response){
         //return res.status(400).json({message: "Code already used"});
         return CustomError.generateError(ErrorsMessages.PRODUCT_CODE_ALREADY_USED,400,ErrorsMessages.PRODUCT_CODE_ALREADY_USED)
@@ -47,7 +47,8 @@ export const deleteProduct = async (req, res, next) => {
       if (!mongoose.Types.ObjectId.isValid(idProduct)) {
         return CustomError.generateError(ErrorsMessages.OID_INVALID,404,ErrorsNames.OID_INVALID);
       }
-      const response = await productsService.deleteOne(idProduct);
+      const user = req.user
+      const response = await productsService.deleteOne(idProduct, user);
       if (!response) {
         return CustomError.generateError(ErrorsMessages.PRODUCTS_NOT_FOUND,404,ErrorsNames.PRODUCTS_NOT_FOUND);
       }
@@ -76,7 +77,7 @@ export const updateProduct = async (req, res, next) => {
 export const addProduct = async(req,res)=>{
     console.log(req.body);
     try {
-      const response = await productsService.createOne(req.body);
+      const response = await productsService.createOne({...req.body, owner: req.user.email});
       res.redirect(`/profile/${response.id}`);
     } catch (error) {
       res.status(500).json({ message: error.message });

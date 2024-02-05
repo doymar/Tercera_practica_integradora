@@ -26,10 +26,11 @@ router.get("/signup2",(req,res) => {
 });
 
 router.get("/restaurar/:email",(req,res) => {
+    const {email} = req.params
     if (!req.cookies.token){
         return res.redirect("/password_rest")
     }
-    res.render('restaurar')
+    res.render('restaurar',{mail: email})
 });
 
 router.get('/password_reset',(req,res)=>{

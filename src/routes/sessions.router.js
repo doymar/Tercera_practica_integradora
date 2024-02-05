@@ -4,6 +4,7 @@ import { usersMiddleware } from "../middlewares/items.middleware.js";
 import { UserManager } from '../DAL/daos/mongo/users.mongo.js'
 import { hashData, compareData, generateToken } from "../utils/utils.js";
 import { logger } from "../utils/logger.js";
+import { transporter } from "../utils/nodemailer.js";
 const router = Router();
 
 router.get('/current', passport.authenticate('jwt',{session: false}), async (req,res) =>{
@@ -59,13 +60,14 @@ router.post('/password_reset', async(req,res) =>{
     if (!user) {
       return res.status(400).json({ message: "User not found with the email provided" });
     }
+
     const mailOptions = {
       from: 'DoymarEcommers',
       to: email,
       subject: 'User Password Reset',
       //text: 'Primera prueba mail',
       html: `<b>Please click on the link below</b>
-      <a href="http://localhost:8080/restart/${email}">Restore password</a>`,
+      <a href="http://localhost:8080/restaurar/${email}">Restore password</a>`,
     }
     await transporter.sendMail(mailOptions);
 

@@ -11,12 +11,12 @@ router.get('/:pid', findProductById);
 
 router.post("/", 
 productsMiddleware, 
-authMiddleware('admin'), createProduct);
+authMiddleware(['admin','premium']), createProduct);
 
-router.delete("/:idProduct", authMiddleware('admin'), deleteProduct);
+router.delete("/:idProduct", authMiddleware(['admin','premium']), deleteProduct);
 
 router.put("/:pid", authMiddleware('admin'), updateProduct);
 
-router.post("/signup", productsMiddleware, authMiddleware('admin'), addProduct)
+router.post("/signup", productsMiddleware, authMiddleware(['admin','premium']), addProduct)
 
 export default router
